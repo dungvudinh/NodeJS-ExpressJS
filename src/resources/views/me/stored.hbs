@@ -1,0 +1,120 @@
+<form class="container d-flex justify-content-center align-items-start" method="POST" action="/courses/handle-form-actions">
+    <div class="row col-8 mt-5 container">
+        {{#if course}}
+        <h1>Danh Sách Khóa Học</h1>
+         <div class="btns">
+            <a href="/courses/create" class="d-flex align-items-center"><ion-icon name="add-outline" class="me-2"></ion-icon>New</a>
+            <a href='/me/trash/courses'class=" mt-2 text-decoration-underline d-flex align-items-center cursor-pointer"><ion-icon name="trash-outline" class="me-2"></ion-icon> Trash({{countDeleted}})</a>
+        </div>
+        <select class="form-select text-censter mt-2" aria-label="Default select example" style="width:200px" name="action" required
+        title="Vui lòng">
+            <option value="" selected>Chọn hành động</option>
+            <option value="delete">Xóa</option>
+        </select>
+        <button type="submit" class="btn btn-primary  execute-btn"  style="width:100px;" disabled>Thực hiện</button>
+        {{_sort.type}}
+        <table class="table mt-3  table-hover ">
+            <thead>
+                <tr>
+                    <th scope="col" class="text-center"> <input type="checkbox" id="check-all_form"></th>
+                    <th scope="col">#</th>
+                    <th scope="col">
+                       {{{sortable 'name' _sort}}}
+                        Name
+                    </th>
+                    <th scope="col">Description</th>
+                    <th scope="col">Image</th>
+                    <th scope="col">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{#each course}}
+                    <tr>
+                         <th class="text-center">
+                            <input type="checkbox" value="{{this._id}}" name="courseIds[]" class="check-form">
+                         </th>
+                        <th scope="row">{{sum 1 @index}}</th>
+                        <td>{{this.name}}</td>
+                        <td>{{this.description}}</td>
+                        <td>{{this.image}}</td>
+                        <td>
+                        <div class="btn-group" role="group">
+                            <button type="button" class="btn btn-outline-primary ">
+                                <a href="/courses/{{this._id}}/edit" class="d-flex align-items-center ">
+                                    <ion-icon name="create-outline"></ion-icon>Edit
+                                </a>
+                            </button>
+                            <button type="button" data-bs-id="{{this._id}}" data-bs-toggle="modal" data-bs-target="#exampleModal" class="btn btn btn-outline-success d-flex align-items-center"><ion-icon name="trash-outline"></ion-icon>Delete</button>
+                                                           
+                        </div>
+                        </td>
+                    </tr>
+                {{/each}}
+            </tbody>
+        </table>
+        {{else}}
+              <p>Bạn chưa đăng khóa học nào.Tạo khóa học mới <a href="/courses/create">tại đây</a> hoặc khôi phục từ <a href="/me/trash/courses"><ion-icon name="trash-outline" class="me-2"></ion-icon>thùng rác</a></p>
+        {{/if}}
+      
+    </div>
+</form>
+ {{!-- modal --}}
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Delete course  ? </h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+            Are you wanna delete this course ? 
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-danger" data-bs-dismiss="modal" id='confirm-btn'>Confirm</button>
+            <button type="button" class="btn btn-dark">Cancel</button>
+        </div>
+        </div>
+    </div>
+</div>
+<form action="" method="POST" id="delete-course_form"></form>
+<script>
+    var exampleModal = document.getElementById('exampleModal');
+    var deleteForm = document.getElementById('delete-course_form');
+    var checkboxAll = document.getElementById('check-all_form');
+    var checkItems = document.querySelectorAll('.check-form');
+    var executeBtn = document.querySelector('.execute-btn');
+    var courseId;
+    exampleModal.addEventListener('show.bs.modal', function (event) {
+        var button = event.relatedTarget;
+        courseId= button.getAttribute('data-bs-id');
+
+    })
+    const confirmBtn = document.getElementById('confirm-btn');
+    confirmBtn.onclick = (e)=>
+    {
+        deleteForm.setAttribute('action',`/courses/${courseId}/soft-delete?_method=DELETE`);
+        deleteForm.submit();
+    }
+    checkboxAll.onchange = (e)=>
+    {
+        checkItems.forEach(input=>input.checked =  e.target.checked);
+        handleShowDeleteBtn();
+    }
+    checkItems.forEach(input=>{
+        input.onchange = (e)=>
+        {
+            var isCheckedAll =  checkItems.length === document.querySelectorAll('input[name="courseIds[]"]:checked').length;
+            checkboxAll.checked = isCheckedAll;
+            handleShowDeleteBtn();
+        }
+    })
+   const handleShowDeleteBtn = ()=>
+   {
+    const countCheck  = document.querySelectorAll('input[name="courseIds[]"]:checked').length;
+    if(countCheck > 0)
+        executeBtn.removeAttribute('disabled');
+    else 
+        executeBtn.setAttribute('disabled', true);
+
+   }
+</script>

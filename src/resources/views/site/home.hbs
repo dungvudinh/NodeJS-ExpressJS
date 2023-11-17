@@ -1,0 +1,25 @@
+<div class="home-page">
+    <div class="search input-group mb-3 mt-5">
+        <input type="text" class="form-control" placeholder="search here ..." aria-label="Recipient's username" aria-describedby="button-addon2">
+        <button class="btn btn-outline-secondary" type="button" id="button-addon2">
+            <ion-icon name="search-outline"></ion-icon>
+            {{!-- Search --}}
+        </button>
+    </div>
+    <div class="container-sm pt-3">
+        <div class="row">
+            {{#each courses}}
+            <div class="col col-xs-6 col-sm-6 col-md-4 col-lg-3 col-xl-3 text-center">
+                <div class="card" >
+                    <img src="https://avatars.githubusercontent.com/u/98681?v=4" class="card-img-top" alt="...">
+                    <div class="card-body">
+                        <h5 class="card-title">{{this.name}}</h5>
+                        <p class="card-text">{{this.description}}</p>
+                        <a href="courses/{{this.slug}}" class="btn btn-primary">Click to show detail</a>
+                    </div>
+                </div>
+            </div>
+            {{/each}}
+        </div>
+    </div>
+</div>

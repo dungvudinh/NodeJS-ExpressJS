@@ -1,0 +1,90 @@
+<div class="container d-flex justify-content-center align-items-start">
+    <div class="row col-8 mt-5">
+        {{#if course}}
+        <h1>Thùng rác</h1>
+        <table class="table mt-3  table-hover ">
+            <thead>
+                <tr>
+                <th scope="col">#</th>
+                <th scope="col">Name</th>
+                <th scope="col">Description</th>
+                <th scope="col">Image</th>
+                <th scope="col">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{#each course}}
+                    <tr>
+                        <th scope="row">{{sum 1 @index}}</th>
+                        <td>{{this.name}}</td>
+                        <td>{{this.description}}</td>
+                        <td>{{this.image}}</td>
+                        <td>
+                        <div class="btn-group" role="group">
+                            <button type="button" class="btn btn-outline-primary restore-btn" data-id='{{this._id}}'>
+                                <ion-icon name="return-down-back-outline"></ion-icon>Restore
+                            </button>
+                            <button type="button" data-bs-id="{{this._id}}" data-bs-toggle="modal" data-bs-target="#exampleModal" class="btn btn btn-outline-success d-flex align-items-center"><ion-icon name="trash-outline"></ion-icon>Delete</button>
+                        </div>
+                        {{!-- modal --}}
+                                        
+                        </td>
+                    </tr>
+                {{/each}}
+            </tbody>
+        </table>
+        {{else}}
+              <p>Thùng rác trống.Trở về <a href="/me/stored/courses"><ion-icon name="home-outline"></ion-icon>Trang chủ</a></p>
+        {{/if}}
+      
+    </div>
+</div>
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Delete course ? </h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+            Are you wanna delete this course ? 
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-danger" data-bs-dismiss="modal" id='confirm-btn'>Confirm</button>
+            <button type="button" class="btn btn-dark">Cancel</button>
+        </div>
+        </div>
+    </div>
+</div>
+<form action="" method="POST" id="delete-course_form"></form>
+<form action="" method="POST" id="restore-course_form"></form>
+
+<script>
+    var exampleModal = document.getElementById('exampleModal');
+    var deleteForm = document.getElementById('delete-course_form');
+    var restoreForm = document.getElementById('restore-course_form');
+    var restoreBtns = document.querySelectorAll('.restore-btn');
+    
+    var courseId;
+    exampleModal.addEventListener('show.bs.modal', function (event) {
+        var button = event.relatedTarget;
+        courseId= button.getAttribute('data-bs-id');
+
+    })
+    const confirmBtn = document.getElementById('confirm-btn');
+    confirmBtn.onclick = (e)=>
+    {
+        deleteForm.setAttribute('action',`/courses/${courseId}/delete?_method=DELETE`);
+        deleteForm.submit();
+    }
+
+    Array.from(restoreBtns).forEach(btn=>
+    {
+        btn.onclick = (e)=>
+        {
+            const courseId = e.target.getAttribute('data-id');
+            restoreForm.setAttribute('action', `/courses/${courseId}/restore?_method=PATCH`);
+            restoreForm.submit();
+        }
+    })
+</script>
